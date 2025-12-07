@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using FistVR;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,6 +75,7 @@ namespace SupplyRaid
 
         public int Count()
         {
+            if (sosigEnemyID == null) return 0;
             return sosigEnemyID.Length;
         }
     }

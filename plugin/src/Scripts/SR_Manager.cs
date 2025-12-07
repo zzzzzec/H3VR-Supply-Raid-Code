@@ -391,7 +391,7 @@ namespace SupplyRaid
 
             //Lets not blowout everyones eardrums
             if (globalAudio)
-                globalAudio.volume = 0.5f;
+                globalAudio.volume = 0.3f;
 
             //Random the Random
             Random.InitState((int)Time.realtimeSinceStartup);
@@ -1032,6 +1032,26 @@ namespace SupplyRaid
 
         void LootDrop(Sosig s)
         {
+            float totalChance = 0f;
+            // Calculate total chance for validation
+            for (int i = 0; i < character.lootCategories.Count; i++)
+            {
+                if (character.lootCategories[i].levelUnlock > CurrentCaptures
+                    || character.lootCategories[i].levelLock > -1
+                    && character.lootCategories[i].levelLock <= CurrentCaptures)
+                    continue;
+
+                totalChance += character.lootCategories[i].chance;
+            }
+
+            if (totalChance > 0.99f)
+            {
+                Debug.LogWarning("Supply Raid: Total Loot Drop Chance is greater than 1.0 (" + totalChance + ")! Some items may never drop.");
+            }
+
+            float roll = Random.Range(0.00f, 1.00f);
+            float currentThreshold = 0f;
+
             //Loop through each loot category
             for (int i = 0; i < character.lootCategories.Count; i++)
             {
@@ -1041,16 +1061,41 @@ namespace SupplyRaid
                     && character.lootCategories[i].levelLock <= CurrentCaptures)
                     continue;
 
+                currentThreshold += character.lootCategories[i].chance;
+
                 //Roll to see if we meet the chance
-                if (Random.Range(0.00f, 1.00f) <= character.lootCategories[i].chance)
+                if (roll <= currentThreshold)
                 {
                     //Spawn Loot
                     SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
                     Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
                     SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+                    return;
                 }
             }
         }
+
+        // void LootDrop(Sosig s)
+        // {
+        //     //Loop through each loot category
+        //     for (int i = 0; i < character.lootCategories.Count; i++)
+        //     {
+        //         //Lock if not correct level
+        //         if (character.lootCategories[i].levelUnlock > CurrentCaptures
+        //             || character.lootCategories[i].levelLock > -1 
+        //             && character.lootCategories[i].levelLock <= CurrentCaptures)
+        //             continue;
+
+        //         //Roll to see if we meet the chance
+        //         if (Random.Range(0.00f, 1.00f) <= character.lootCategories[i].chance)
+        //         {
+        //             //Spawn Loot
+        //             SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
+        //             Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
+        //             SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+        //         }
+        //     }
+        // }
 
         private void PlayerDeathEvent(bool killedSelf, int iff)
         {

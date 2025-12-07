@@ -1,4 +1,4 @@
-﻿using FistVR;
+using FistVR;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -298,15 +298,15 @@ namespace SupplyRaid
         {
             if (gun.CompatibleMagazines.Count > 0)
             {
-                SpawnObjectAtPlace(gun.CompatibleMagazines[Random.Range(0, gun.CompatibleMagazines.Count - 1)], pos, rotation);
+                SpawnObjectAtPlace(gun.CompatibleMagazines[Random.Range(0, gun.CompatibleMagazines.Count)], pos, rotation);
             }
             else if (gun.CompatibleClips.Count > 0)
             {
-                SpawnObjectAtPlace(gun.CompatibleClips[Random.Range(0, gun.CompatibleClips.Count - 1)], pos, rotation);
+                SpawnObjectAtPlace(gun.CompatibleClips[Random.Range(0, gun.CompatibleClips.Count)], pos, rotation);
             }
             else if (gun.CompatibleSpeedLoaders.Count > 0)
             {
-                SpawnObjectAtPlace(gun.CompatibleSpeedLoaders[Random.Range(0, gun.CompatibleSpeedLoaders.Count - 1)], pos, rotation);
+                SpawnObjectAtPlace(gun.CompatibleSpeedLoaders[Random.Range(0, gun.CompatibleSpeedLoaders.Count)], pos, rotation);
             }
             else if (gun.CompatibleSingleRounds.Count > 0)
             {
@@ -314,7 +314,7 @@ namespace SupplyRaid
                 for (int i = 0; i < num; i++)
                 {
                     Vector3 vector = pos + Vector3.up * (0.05f * (float)i);
-                    SpawnObjectAtPlace(gun.CompatibleSingleRounds[Random.Range(0, gun.CompatibleSingleRounds.Count - 1)], vector, rotation);
+                    SpawnObjectAtPlace(gun.CompatibleSingleRounds[Random.Range(0, gun.CompatibleSingleRounds.Count)], vector, rotation);
                 }
             }
         }

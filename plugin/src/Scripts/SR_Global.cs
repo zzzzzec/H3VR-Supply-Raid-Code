@@ -1,4 +1,4 @@
-﻿using FistVR;
+using FistVR;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -298,7 +298,7 @@ namespace SupplyRaid
                 objectCount += table.Loot.Count;
 
             //Random Select from Table Loot and Group IDs
-            Random.InitState((System.DateTime.Now.Second * System.DateTime.Now.Minute) + System.DateTime.Now.Millisecond);
+            //Random.InitState((System.DateTime.Now.Second * System.DateTime.Now.Minute) + System.DateTime.Now.Millisecond);
             int index = Random.Range(0, objectCount);
 
             //Group IDs
