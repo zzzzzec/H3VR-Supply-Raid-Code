@@ -12,6 +12,7 @@ namespace SupplyRaid
     public class SR_Manager : MonoBehaviour
     {
         public static SR_Manager instance;
+
         public int CurrentCaptures
         {
             set { currentCaptures = value; }
@@ -207,7 +208,7 @@ namespace SupplyRaid
         void Awake()
         {
             //Load External Assets
-            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
+            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets(true));
 
             //JSONExample();
             instance = this;
@@ -395,12 +396,19 @@ namespace SupplyRaid
             //Random the Random
             Random.InitState((int)Time.realtimeSinceStartup);
 
-            /*
             if (SupplyRaidPlugin.bgmEnabled)
             {
-                Invoke("LoadBGM", 0.25f);
+                Invoke(nameof(LoadBGM), 1f);
             }
-            */
+            
+        }
+
+        void LoadBGM()
+        {
+            Quaternion lookAt = Quaternion.Euler(-spawnMenu.forward);
+            //BGM.BGM_Interface.SpawnPanel(spawnMenu.position + -spawnMenu.forward + Vector3.up, lookAt);
+            //print("FOUND BGM!!!");
+
         }
 
         void OnDisable()
@@ -1611,14 +1619,35 @@ namespace SupplyRaid
                 target = AttackSupplyPoint().squadPoint;
             else if (currentLevel.squadBehaviour == SquadBehaviour.HuntPlayer)
             {
-                spawnPoint = AttackSupplyPoint();
+                //Same team, spawn in 'base'
+                if ((int)currentLevel.squadTeamRandomized == GetFactionIFF())
+                    spawnPoint = AttackSupplyPoint();
+                else
+                {
+                    SR_SupplyPoint newSpawn = null;
+                    int safety = 0;
+                    //Random Supply Point
+                    while (safety < 100)
+                    {
+                        //Debug.Log("Spawn Squads Sosigs While");
+                        newSpawn = supplyPoints[Random.Range(0, supplyPoints.Count)];
+
+                        //If not Player or Defender Supplypoint
+                        if (newSpawn != AttackSupplyPoint() || newSpawn != GetLastSupplyPoint() )
+                        {
+                            spawnPoint = newSpawn;
+                            break;
+                        }
+                        safety++;
+                    }
+                }
 
                 if (SupplyRaidPlugin.h3mpEnabled && Networking.ServerRunning())
                 {
                     //Multiplayer
                     int playerID = Random.Range(0, Networking.GetPlayerCount());
 
-                    if(playerID == Networking.GetPlayerCount())
+                    if (playerID == Networking.GetPlayerCount())
                         target = GM.CurrentPlayerBody.Head;
                     else
                         target = Networking.GetPlayer(playerID).head;
@@ -1722,11 +1751,14 @@ namespace SupplyRaid
                 //Sniper Setup
                 if (sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
                 {
-                    Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
-                    SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel, teamID);
-                    maxEnemies--;
                     sniperCount--;
-                    yield return new WaitForSeconds(sosigSpawnTick);
+                    Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
+                    if (spot != null)
+                    {
+                        SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel, teamID);
+                        maxEnemies--;
+                        yield return new WaitForSeconds(sosigSpawnTick);
+                    }
                 }
 
                 //Guard Setup
@@ -1751,6 +1783,10 @@ namespace SupplyRaid
 
             //Patrol Setup
             List<int> groups = new List<int>();
+
+            //Force min size to 1
+            if (currentLevel.minPatrolSize <= 0)
+                currentLevel.minPatrolSize = 1;
 
             while (true)
             {

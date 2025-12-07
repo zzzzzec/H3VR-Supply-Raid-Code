@@ -16,7 +16,7 @@ namespace SupplyRaid
         public GameObject go;
         public FVRObject fvrObject;
         public SR_GenericButton genericButton;
-        
+
         public void SelectCharacter()
         {
             if (SR_Manager.instance.characters.Count > 0)
@@ -165,6 +165,11 @@ namespace SupplyRaid
         public void SelectProfile()
         {
             SR_Menu.instance.SetProfile(text.text);
+        }
+
+        public void SelectMap()
+        {
+            SR_MapSelector.instance.SelectMap(index);
         }
     }
 }

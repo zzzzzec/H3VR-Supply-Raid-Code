@@ -1,7 +1,6 @@
 ﻿using FistVR;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -291,6 +290,7 @@ namespace SupplyRaid
 
             if (magazineUpgrade != null)
             {
+                // 这里在升级弹匣的时候，保留里面的子弹
                 List<FireArmRoundClass> oldRoundClasses = new List<FireArmRoundClass>();
                 for (int i = 0; i < m_detectedMag.m_numRounds; i++)
                 {
